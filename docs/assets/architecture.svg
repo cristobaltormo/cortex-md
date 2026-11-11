@@ -17,7 +17,7 @@
 
   <text class="lane" x="40" y="44">SOURCES</text>
   <text class="lane" x="370" y="44">THE BRAIN (A GIT REPO)</text>
-  <text class="lane" x="760" y="44">CLAUDE CODE</text>
+  <text class="lane" x="760" y="44">YOUR AGENT</text>
 
   <rect class="box" x="40" y="62" width="250" height="84" rx="10"/>
   <text class="title" x="58" y="92">The machine</text>
