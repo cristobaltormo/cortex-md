@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python3 -m unittest discover -s tests -v
+
+  lint:
+    name: ShellCheck and compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: shellcheck -x bin/*.sh install.sh
+      - run: python3 -m py_compile bin/*.py
+
+  smoke:
+    name: Fresh install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install into a temporary Claude settings file
+        env:
+          CLAUDE_SETTINGS: ${{ runner.temp }}/settings.json
+        run: |
+          git config --global user.email ci@example.com
+          git config --global user.name ci
+          ./install.sh
+          python3 -c "import json,os; d=json.load(open(os.environ['CLAUDE_SETTINGS'])); assert len(d['hooks']) == 3, d"
+      - name: Validator is clean on the example brain
+        run: python3 bin/health.py | tee /dev/stderr | grep -q "Brain healthy"

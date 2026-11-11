@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+title: cortex-md
+type: software
+authors:
+  - family-names: Tormo
+    given-names: Cristóbal
+repository-code: https://github.com/cristobaltormo/cortex-md
+license: MIT
+version: 0.1.0
+date-released: 2026-11-11
+abstract: Memory for Claude Code that keeps itself honest, built from a generated inventory, curated notes and skills in a plain markdown git repo.

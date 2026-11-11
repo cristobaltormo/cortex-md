@@ -1,0 +1,7 @@
+.env
+state/
+inventory/*
+!inventory/CHANGES.md
+!inventory/.gitkeep
+__pycache__/
+*.pyc

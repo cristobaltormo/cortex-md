@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="1000" height="520" role="img" aria-label="Architecture: the machine feeds the inventory, conversations feed memory through the curator, and hooks load both into Claude Code">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#64748b"/>
+    </marker>
+    <style>
+      text { font-family: DejaVu Sans, Helvetica, Arial, sans-serif; fill: #0f172a; }
+      .title { font-size: 15px; font-weight: 700; }
+      .sub { font-size: 12px; fill: #475569; }
+      .mono { font-family: DejaVu Sans Mono, Menlo, monospace; font-size: 12px; fill: #334155; }
+      .lane { font-size: 12px; font-weight: 700; fill: #64748b; letter-spacing: 1.5px; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .edge { stroke: #64748b; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1000" height="520" rx="16" fill="#f8fafc" stroke="#e2e8f0"/>
+
+  <text class="lane" x="40" y="44">SOURCES</text>
+  <text class="lane" x="370" y="44">THE BRAIN (A GIT REPO)</text>
+  <text class="lane" x="760" y="44">CLAUDE CODE</text>
+
+  <rect class="box" x="40" y="62" width="250" height="84" rx="10"/>
+  <text class="title" x="58" y="92">The machine</text>
+  <text class="sub" x="58" y="114">containers, ports, disks, updates</text>
+  <text class="mono" x="58" y="133">inventory.sh  snapshot.py</text>
+
+  <rect class="box" x="40" y="200" width="250" height="84" rx="10"/>
+  <text class="title" x="58" y="230">Your conversations</text>
+  <text class="sub" x="58" y="252">decisions, preferences, procedures</text>
+  <text class="mono" x="58" y="271">nightly: curator.sh</text>
+
+  <rect class="box" x="40" y="338" width="250" height="84" rx="10"/>
+  <text class="title" x="58" y="368">You, during a session</text>
+  <text class="sub" x="58" y="390">remember / close-session skills</text>
+  <text class="mono" x="58" y="409">memory-keeping rules</text>
+
+  <rect x="350" y="62" width="300" height="84" rx="10" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.5"/>
+  <text class="title" x="368" y="92">inventory/</text>
+  <text class="sub" x="368" y="114">written by a script, never by hand</text>
+  <text class="mono" x="368" y="133">host.md  CHANGES.md</text>
+
+  <rect x="350" y="200" width="300" height="84" rx="10" fill="#e0e7ff" stroke="#818cf8" stroke-width="1.5"/>
+  <text class="title" x="368" y="230">memory/</text>
+  <text class="sub" x="368" y="252">one fact per file, verified dates</text>
+  <text class="mono" x="368" y="271">MEMORY.md  index-*.md  notes</text>
+
+  <rect x="350" y="338" width="300" height="84" rx="10" fill="#d1fae5" stroke="#34d399" stroke-width="1.5"/>
+  <text class="title" x="368" y="368">skills/  +  PENDING.md</text>
+  <text class="sub" x="368" y="390">procedures, and what is half done</text>
+  <text class="mono" x="368" y="409">SKILL.md per procedure</text>
+
+  <rect class="box" x="720" y="62" width="240" height="84" rx="10"/>
+  <text class="title" x="738" y="92">Session start</text>
+  <text class="sub" x="738" y="114">where you left off, what changed</text>
+  <text class="mono" x="738" y="133">context.py</text>
+
+  <rect class="box" x="720" y="200" width="240" height="84" rx="10"/>
+  <text class="title" x="738" y="230">Every message</text>
+  <text class="sub" x="738" y="252">likeliest notes and their links</text>
+  <text class="mono" x="738" y="271">inject-memory.py</text>
+
+  <rect class="box" x="720" y="338" width="240" height="84" rx="10"/>
+  <text class="title" x="738" y="368">Session end</text>
+  <text class="sub" x="738" y="390">commit and push the brain</text>
+  <text class="mono" x="738" y="409">session-end.sh</text>
+
+  <path class="edge" d="M290 104 H346"/>
+  <path class="edge" d="M290 242 H346"/>
+  <path class="edge" d="M290 380 H346"/>
+  <path class="edge" d="M650 104 H716"/>
+  <path class="edge" d="M650 242 H716"/>
+  <path class="edge" d="M716 380 H654"/>
+
+  <rect x="350" y="456" width="610" height="40" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text class="title" x="368" y="481">health.py validates it all: index, links, dates, sizes, orphans, secrets</text>
+</svg>

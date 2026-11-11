@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400" role="img" aria-label="cortex-md: memory for Claude Code that keeps itself honest">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#16213e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="400" fill="url(#bg)"/>
+  <g transform="translate(120 110)">
+    <rect width="180" height="180" rx="40" fill="#0f172a" stroke="#27324d" stroke-width="3"/>
+    <rect x="34" y="40" width="112" height="25" rx="12.5" fill="#38bdf8"/>
+    <rect x="34" y="77.5" width="112" height="25" rx="12.5" fill="#818cf8"/>
+    <rect x="34" y="115" width="112" height="25" rx="12.5" fill="#34d399"/>
+    <circle cx="124" cy="52.5" r="6" fill="#0f172a"/>
+    <circle cx="124" cy="90" r="6" fill="#0f172a"/>
+    <circle cx="124" cy="127.5" r="6" fill="#0f172a"/>
+  </g>
+  <text x="350" y="205" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="96" font-weight="700" fill="#f8fafc">cortex-md</text>
+  <text x="354" y="262" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="32" fill="#94a3b8">Memory for Claude Code that keeps itself honest</text>
+  <text x="354" y="310" font-family="DejaVu Sans Mono, Menlo, monospace" font-size="24" fill="#38bdf8">inventory</text>
+  <text x="498" y="310" font-family="DejaVu Sans Mono, Menlo, monospace" font-size="24" fill="#475569">/</text>
+  <text x="522" y="310" font-family="DejaVu Sans Mono, Menlo, monospace" font-size="24" fill="#818cf8">memory</text>
+  <text x="618" y="310" font-family="DejaVu Sans Mono, Menlo, monospace" font-size="24" fill="#475569">/</text>
+  <text x="642" y="310" font-family="DejaVu Sans Mono, Menlo, monospace" font-size="24" fill="#34d399">skills</text>
+</svg>
