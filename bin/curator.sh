@@ -2,10 +2,8 @@
 set -uo pipefail
 BRAIN="${BRAIN_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 . "$BRAIN/bin/load-env.sh"
-PROJECTS="${CLAUDE_PROJECTS_DIR:-$HOME/.claude/projects}"
 MODEL="${CURATOR_MODEL:-sonnet}"
 CLAUDE_BIN="${CLAUDE_BIN:-claude}"
-OWN_PROJECT=$(printf %s "$BRAIN" | sed 's/[^A-Za-z0-9]/-/g')
 LOG="$BRAIN/state/curator.log"
 mkdir -p "$BRAIN/state"
 
@@ -16,7 +14,8 @@ if [ -f "$LOG" ] && [ "$(stat -c %s "$LOG")" -gt 1000000 ]; then
   tail -c 300000 "$LOG" > "$LOG.tmp" && mv "$LOG.tmp" "$LOG"
 fi
 
-NEW=$(find "$PROJECTS" -name '*.jsonl' -mtime -1 -not -path "*/$OWN_PROJECT/*" 2>/dev/null | wc -l)
+TRANSCRIPTS=$(python3 "$BRAIN/bin/transcripts.py" --days 1 2>/dev/null)
+NEW=$(printf '%s' "$TRANSCRIPTS" | grep -c .)
 PROBLEMS=$("$BRAIN/bin/health.py" --brief 2>/dev/null | wc -l)
 if [ "$NEW" -eq 0 ] && [ "$PROBLEMS" -eq 0 ]; then
   echo "[$(date '+%F %T')] no new transcripts and the brain is healthy, not running" >> "$LOG"
@@ -29,8 +28,13 @@ You are the curator of this brain (the directory $BRAIN). First read the skill
 
 Tonight's work, in this order:
 
-1. DISTILL. Look at the transcripts modified in the last 24 hours under $PROJECTS (use Glob for
-   "*/*.jsonl", Grep on '"timestamp":"YYYY-MM-DD' for today and yesterday, then Read with offset).
+1. DISTILL. These are the conversation transcripts modified in the last 24 hours, one per line as
+   "agent<TAB>path" (Claude Code, Antigravity CLI and Codex CLI are all read):
+$TRANSCRIPTS
+   Use Grep to find the relevant lines and Read with offset to read them; transcripts can be huge.
+   Formats: Claude Code lines have "type":"user" or "assistant" with message.content; Antigravity
+   lines have "type":"USER_INPUT" (the request is inside <USER_REQUEST> tags) and "PLANNER_RESPONSE";
+   Codex rollout lines carry a payload with a role. Ignore system and hook messages.
    Look ONLY for: decisions with their reason, preferences the user expressed, procedures that
    were hard to discover, and devices or services that behave unexpectedly. Zero or one note is
    the normal outcome. Do not invent material to justify the run; if there is nothing worth

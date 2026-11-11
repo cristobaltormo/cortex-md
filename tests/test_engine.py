@@ -168,5 +168,63 @@ class Brain(unittest.TestCase):
         self.assertIn("Session of", log)
 
 
+    def write_transcripts(self):
+        home = self.tmp / "home"
+        claude = self.tmp / "projects" / "-some-project"
+        claude.mkdir(parents=True)
+        (claude / "s1.jsonl").write_text(json.dumps({"type": "user", "message": {"content": "fix the nginx redirect loop"}}) + "\n")
+        agy = home / ".gemini" / "antigravity-cli" / "brain" / "abc" / ".system_generated" / "logs"
+        agy.mkdir(parents=True)
+        (agy / "transcript_full.jsonl").write_text(
+            json.dumps({"type": "SYSTEM_MESSAGE", "content": "hook text"}) + "\n"
+            + json.dumps({"type": "USER_INPUT", "content": "<USER_REQUEST>\nrotate the backup disk\n</USER_REQUEST>\n<ADDITIONAL_METADATA>x</ADDITIONAL_METADATA>"}) + "\n")
+        codex = home / ".codex" / "sessions" / "2026" / "11" / "11"
+        codex.mkdir(parents=True)
+        (codex / "rollout-1.jsonl").write_text(
+            json.dumps({"type": "response_item", "payload": {"role": "user", "content": [{"type": "input_text", "text": "<environment_context>x"}]}}) + "\n"
+            + json.dumps({"type": "response_item", "payload": {"role": "user", "content": [{"type": "input_text", "text": "upgrade the postgres container"}]}}) + "\n")
+        return {**self.env, "HOME": str(home), "CLAUDE_PROJECTS_DIR": str(self.tmp / "projects"),
+                "GEMINI_HOME": str(home / ".gemini"), "CODEX_HOME": str(home / ".codex")}
+
+    def test_transcripts_cover_all_three_agents(self):
+        env = self.write_transcripts()
+        out = subprocess.run([sys.executable, str(self.brain / "bin" / "transcripts.py")], capture_output=True, text=True, env=env).stdout
+        self.assertEqual(sorted(l.split("\t")[0] for l in out.splitlines()), ["antigravity", "claude", "codex"])
+        count = subprocess.run([sys.executable, str(self.brain / "bin" / "transcripts.py"), "--count", "--agent", "codex"],
+                               capture_output=True, text=True, env=env).stdout
+        self.assertEqual(count.strip(), "1")
+
+    def test_context_lists_conversations_from_every_agent(self):
+        env = self.write_transcripts()
+        out = json.loads(subprocess.run([sys.executable, str(self.brain / "bin" / "context.py")],
+                                        capture_output=True, text=True, env=env, stdin=subprocess.DEVNULL).stdout)
+        text = out["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("rotate the backup disk", text)
+        self.assertIn("(antigravity)", text)
+
+    def test_context_skips_the_current_conversation(self):
+        env = self.write_transcripts()
+        payload = json.dumps({"conversationId": "abc"})
+        out = json.loads(subprocess.run([sys.executable, str(self.brain / "bin" / "context.py"), "--agent", "antigravity"],
+                                        capture_output=True, text=True, env=env, input=payload).stdout)
+        self.assertNotIn("rotate the backup disk", out["injectSteps"][0]["systemMessage"]["systemMessage"])
+
+
+    def test_session_start_stdout_is_pure_json_with_remote_and_dirty_tree(self):
+        git = ["git", "-c", "user.name=t", "-c", "user.email=t@t"]
+        remote = self.tmp / "remote.git"
+        subprocess.run(["git", "init", "-q", "--bare", str(remote)], check=True)
+        subprocess.run(["git", "init", "-q", "-b", "main"], cwd=self.brain, check=True)
+        subprocess.run([*git, "add", "-A"], cwd=self.brain, check=True)
+        subprocess.run([*git, "commit", "-qm", "init"], cwd=self.brain, check=True)
+        subprocess.run(["git", "remote", "add", "origin", str(remote)], cwd=self.brain, check=True)
+        subprocess.run(["git", "push", "-q", "-u", "origin", "main"], cwd=self.brain, check=True)
+        (self.brain / "PENDING.md").write_text("dirty\n")
+        env = {**self.env, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
+        out = subprocess.run(["bash", str(self.brain / "bin" / "session-start.sh")], capture_output=True, text=True,
+                             env=env, stdin=subprocess.DEVNULL).stdout
+        self.assertIn("hookSpecificOutput", json.loads(out))
+
+
 if __name__ == "__main__":
     unittest.main()

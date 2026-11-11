@@ -4,7 +4,7 @@ BRAIN="${BRAIN_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 cd "$BRAIN" 2>/dev/null || exit 0
 
 if git remote get-url origin >/dev/null 2>&1; then
-  timeout 8 git pull --quiet --rebase --autostash 2>/dev/null || git rebase --abort 2>/dev/null || true
+  timeout 8 git pull --quiet --rebase --autostash >/dev/null 2>&1 || git rebase --abort 2>/dev/null || true
 fi
 
 if [ -n "$(git status --porcelain 2>/dev/null)" ]; then

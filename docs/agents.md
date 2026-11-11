@@ -43,9 +43,11 @@ representation per layer and the installer warns you.
   seconds, so it uses the same light mode.
 - **Memory directory.** `autoMemoryDirectory` is a Claude Code setting. Other agents find the notes
   through the instructions file and the per-message suggestions.
-- **The curator.** The nightly curator runs through the Claude Code CLI and distils Claude Code
-  transcripts. Notes written by the other agents are still re-verified, linted and fixed, but their
-  conversations are not mined yet.
+- **The curator.** The nightly curator runs through the Claude Code CLI but reads the conversations of
+  all three agents: `bin/transcripts.py` lists them (Claude Code under `~/.claude/projects`,
+  Antigravity under `~/.gemini/antigravity*/brain/*/.system_generated/logs`, Codex under
+  `~/.codex/sessions`). Claude Code and Antigravity formats are tested; the Codex one is read
+  best-effort. Override the locations with `CLAUDE_PROJECTS_DIR`, `GEMINI_HOME` and `CODEX_HOME`.
 - **Hook payloads.** `inject-memory.py` detects the agent from the payload (`prompt` for Claude
   Code and Codex, `lastUserInput` for Antigravity) and answers in the format that agent expects.
   `context.py --agent antigravity` prints the Antigravity format; the default is the Claude Code and
@@ -59,6 +61,7 @@ You lose the automatic continuity and the per-message suggestions, and keep ever
 
 ## Adding another agent
 
-Add an `install_<agent>` function to `bin/install-hooks.py`, a branch in `context.py` and
+Add an `install_<agent>` function to `bin/install-hooks.py`, a transcript source and extractor in
+`bin/transcripts.py`, a branch in `context.py` and
 `inject-memory.py` if its hook output differs, and a test in `tests/test_engine.py`. The engine has
 no other agent-specific code.

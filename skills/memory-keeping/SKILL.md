@@ -106,8 +106,9 @@ proposed again within a month.
 
 ## When you run as the curator (nightly cron)
 
-1. Read the day's transcripts under the agent's projects directory. Use Glob and Grep rather than
-   shell `find`/`ls`, which a sandboxed headless run may block.
+1. Read the day's transcripts. The curator prompt lists them with `agent<TAB>path`; run
+   `bin/transcripts.py --days 1` to list them yourself. They come from Claude Code, Antigravity CLI and
+   Codex CLI. Use `Grep` and `Read` with an offset rather than reading whole files.
 2. Extract **only** what meets the criteria above. Most days that is zero or one note.
 3. Re-verify: for each note whose `verified` is over 30 days old and that can be checked from
    this host, check it. If still right, bump `verified`. If not, correct the note and say in the

@@ -8,6 +8,7 @@ Every script finds the brain from its own location, or from `BRAIN_DIR`.
 | `session-start.sh` | Start hook: pulls, rescues unsaved changes, refreshes a stale inventory, runs `context.py` |
 | `session-end.sh` | End hook: commits and pushes what was written in the brain; `--light` pushes in the background at most every five minutes |
 | `install-hooks.py` | Merges the hooks into Claude Code, Codex CLI and Antigravity CLI configuration and links the skills |
+| `transcripts.py` | Finds the conversation transcripts of Claude Code, Antigravity CLI and Codex CLI and extracts the topic of each; `--days`, `--agent`, `--count` |
 | `context.py` | Start-of-session text: recent conversations, learnings, machine changes, open fronts, warnings; `--agent antigravity` for that agent's format |
 | `inject-memory.py` | Per-message hook: suggests the likeliest notes and the ones they link to |
 | `health.py` | Validator: index, links, dates, sizes, orphans, dead entities, secrets. `--brief` prints defects only |

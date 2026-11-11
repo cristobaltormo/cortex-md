@@ -24,6 +24,12 @@ written in a note last spring is a confident lie by autumn. cortex-md splits wha
 into three layers and keeps each one fresh in a different way, so it can tell what it was *told*
 from what the machine *is*.
 
+<p align="center">
+  <img src="docs/assets/demo.gif" alt="Terminal demo: install, session start context, note suggestions and the validator" width="860">
+</p>
+
+<p align="center"><sub>Real output of the shipped example brain, recorded from the scripts themselves.</sub></p>
+
 - [Why it exists](#why-it-exists)
 - [What a session looks like](#what-a-session-looks-like)
 - [How it works](#how-it-works)
@@ -136,7 +142,7 @@ The brain can live anywhere: scripts find their own directory, or use `BRAIN_DIR
 | Codex CLI | Hooks, skills | Written from the official docs; not yet run against a real Codex |
 | Any `AGENTS.md` reader | By instruction only | Works without hooks |
 
-Details and differences in [docs/agents.md](docs/agents.md). The nightly curator currently distils Claude Code transcripts only.
+Details and differences in [docs/agents.md](docs/agents.md). The nightly curator runs through the Claude Code CLI but distils the conversations of all three agents.
 
 ## Writing notes
 
@@ -187,7 +193,7 @@ Add the note to its area index, link it with `[[other-note]]`, and run `bin/heal
 ## Limits
 
 - Retrieval is keyword scoring over a small corpus, not embeddings. At a few hundred notes `grep` is enough; if it stops being enough, add an index.
-- The curator needs a working `claude` CLI and uses your quota once a night, only when there is something to do.
+- The curator needs a working Claude Code CLI (`claude`) even if you work mostly in another agent, and uses your Claude quota once a night, only when there is something to do. Codex transcripts are read on a best-effort basis from the documented rollout format; Claude Code and Antigravity are tested.
 - Inventory collectors cover Linux, Docker, LXC and Proxmox. Other platforms need a collector added to `bin/snapshot.py`.
 
 ## Contributing

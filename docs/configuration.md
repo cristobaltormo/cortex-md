@@ -6,7 +6,9 @@ Everything has a default. Set values in the environment or in `.env` at the root
 | Variable | Default | Used by | Meaning |
 |---|---|---|---|
 | `BRAIN_DIR` | directory above `bin/` | all scripts | Where the brain lives |
-| `CLAUDE_PROJECTS_DIR` | `~/.claude/projects` | `context.py`, `curator.sh` | Where Claude Code stores transcripts |
+| `CLAUDE_PROJECTS_DIR` | `~/.claude/projects` | `transcripts.py` | Where Claude Code stores transcripts |
+| `GEMINI_HOME` | `~/.gemini` | `transcripts.py` | Where Antigravity stores its conversations |
+| `CODEX_HOME` | `~/.codex` | `transcripts.py` | Where Codex stores its sessions |
 | `CLAUDE_BIN` | `claude` | `curator.sh` | Full path to the CLI; set it for cron |
 | `CURATOR_MODEL` | `sonnet` | `curator.sh` | Model for the nightly run |
 | `BACKUP_DIR` | unset | `snapshot.py` | Watch the age of the newest file in this directory |

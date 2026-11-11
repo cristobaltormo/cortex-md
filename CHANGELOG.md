@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-11
+
+### Added
+- Terminal demo in the README, generated from the real output of the scripts.
+- The curator and the session-start summary now read the conversations of Claude Code, Antigravity CLI and Codex CLI through `bin/transcripts.py`.
+- The session-start summary skips the conversation that is starting, using the id the hook receives.
+
+### Fixed
+- `session-start.sh` no longer lets `git pull --autostash` print to stdout, which made strict agents (Antigravity) reject the hook output.
+
 ## [0.2.0] - 2026-11-11
 
 ### Added
@@ -34,6 +44,7 @@ First public release.
 - `install.sh` that merges the hooks into Claude Code settings idempotently.
 - Optional webhook notifications, at most one per title per day.
 
-[Unreleased]: https://github.com/cristobaltormo/cortex-md/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/cristobaltormo/cortex-md/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/cristobaltormo/cortex-md/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/cristobaltormo/cortex-md/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/cristobaltormo/cortex-md/releases/tag/v0.1.0

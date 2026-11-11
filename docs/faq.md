@@ -10,7 +10,7 @@ notifications, and `git push` to whatever remote you configure. The nightly cura
 Claude Code installation like any other session.
 
 **What does the curator cost?**
-One headless Claude run a night, and only when there are new transcripts or validator defects.
+One headless Claude Code run a night, and only when there are new transcripts or validator defects.
 Quota failures retry after the reset.
 
 **Can I use it without the curator?**

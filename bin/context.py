@@ -2,13 +2,15 @@
 import json
 import os
 import re
+import select
 import subprocess
 import sys
 import time
 from pathlib import Path
 
+import transcripts
+
 BRAIN = Path(os.environ.get("BRAIN_DIR") or Path(__file__).resolve().parent.parent)
-PROJECTS = Path(os.environ.get("CLAUDE_PROJECTS_DIR") or Path.home() / ".claude" / "projects")
 CURRENT_SESSION = os.environ.get("CLAUDE_CODE_SESSION_ID", "")
 TOPIC_LENGTH = 120
 FRONT_LENGTH = 150
@@ -40,52 +42,15 @@ def shorten(text, length):
     return text[:length].rsplit(" ", 1)[0] + "..."
 
 
-def message_text(event):
-    content = event.get("message", {}).get("content")
-    if isinstance(content, list):
-        content = " ".join(p.get("text", "") for p in content if isinstance(p, dict))
-    return " ".join(content.split()) if isinstance(content, str) else ""
-
-
-def topic_of(path):
-    try:
-        with path.open(encoding="utf-8", errors="replace") as fh:
-            for i, line in enumerate(fh):
-                if i > 40:
-                    break
-                try:
-                    event = json.loads(line)
-                except ValueError:
-                    continue
-                if event.get("type") != "user":
-                    continue
-                text = message_text(event)
-                if text and not text.startswith(("<", "Caveat:", "[Request")):
-                    return shorten(text, TOPIC_LENGTH)
-    except OSError:
-        pass
-    return None
-
-
-def recent_conversations(count=3, days=7):
-    own_project = re.sub(r"[^A-Za-z0-9]", "-", str(BRAIN))
-    recent = []
-    for path in PROJECTS.glob("*/*.jsonl"):
-        if CURRENT_SESSION and CURRENT_SESSION in path.name:
-            continue
-        if path.parent.name == own_project:
-            continue
-        try:
-            age = time.time() - path.stat().st_mtime
-        except OSError:
-            continue
-        if age < days * 86400:
-            recent.append((age, path))
+def recent_conversations(session, count=3, days=7):
     result = []
-    for age, path in sorted(recent)[:count]:
-        topic = topic_of(path)
+    for age, path, agent in transcripts.find(days, skip_session=session)[:count * 3]:
+        topic = transcripts.topic_of(path, agent, TOPIC_LENGTH)
         if topic:
-            result.append(f"- *{ago(age)}*: {topic}")
+            label = "" if agent == "claude" else f" ({agent})"
+            result.append(f"- *{ago(age)}*{label}: {topic}")
+        if len(result) == count:
+            break
     return result
 
 
@@ -169,6 +134,18 @@ def system_warnings():
     return [f"- {w}" for w in warnings]
 
 
+def current_session():
+    try:
+        if not sys.stdin.isatty() and select.select([sys.stdin], [], [], 0.2)[0]:
+            payload = json.loads(sys.stdin.read() or "{}")
+            found = payload.get("session_id") or payload.get("conversationId")
+            if found:
+                return found
+    except (ValueError, OSError, AttributeError):
+        pass
+    return CURRENT_SESSION
+
+
 def agent_format():
     if "--agent" in sys.argv:
         index = sys.argv.index("--agent")
@@ -183,7 +160,7 @@ def block(title, lines):
 
 def main():
     lines = [
-        *block("Recent conversations", recent_conversations()),
+        *block("Recent conversations", recent_conversations(current_session())),
         *block("What you learned last", latest_learnings()),
         *block("The machine has changed", recent_changes()),
         *block("Open fronts (details in PENDING.md)", open_fronts()),
