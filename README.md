@@ -6,7 +6,7 @@
   <a href="https://github.com/cristobaltormo/cortex-md/actions/workflows/ci.yml"><img src="https://github.com/cristobaltormo/cortex-md/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/cristobaltormo/cortex-md" alt="MIT license"></a>
   <a href="https://github.com/cristobaltormo/cortex-md/releases"><img src="https://img.shields.io/github/v/release/cristobaltormo/cortex-md?include_prereleases" alt="Latest release"></a>
-  <img src="https://img.shields.io/badge/python-3.9%2B-3776ab" alt="Python 3.9+">
+  <img src="https://img.shields.io/badge/python-3.11%2B-3776ab" alt="Python 3.11+">
   <img src="https://img.shields.io/badge/dependencies-none-brightgreen" alt="No dependencies">
   <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome"></a>
 </p>
