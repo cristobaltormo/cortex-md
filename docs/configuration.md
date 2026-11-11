@@ -34,7 +34,8 @@ and when the curator fails two nights running.
 
 `install.sh` adds three hooks and `autoMemoryDirectory` to `~/.claude/settings.json`. To do it by
 hand, copy `settings.example.json`, replacing `__BRAIN__` with the absolute path of the brain.
-The hooks apply to every Claude Code project on the machine.
+The hooks apply to every project of each installed agent on the machine. Per-agent details are in
+[agents.md](agents.md).
 
 ## Adding a collector
 

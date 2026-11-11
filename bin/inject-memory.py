@@ -81,9 +81,11 @@ def linked_from(path, excluded):
 
 def main():
     try:
-        prompt = json.load(sys.stdin).get("prompt") or ""
+        payload = json.load(sys.stdin)
     except ValueError:
         return
+    antigravity = "lastUserInput" in payload or "conversationId" in payload
+    prompt = payload.get("prompt") or payload.get("lastUserInput") or ""
     words = words_of(prompt)
     if not words:
         return
@@ -99,12 +101,13 @@ def main():
     linked = linked_from(notes[0][1], suggested)
     if linked:
         lines.append(f"Linked from {suggested[0]}: " + ", ".join(linked))
-    print(json.dumps({
-        "hookSpecificOutput": {
-            "hookEventName": "UserPromptSubmit",
-            "additionalContext": "\n".join(lines),
-        }
-    }))
+    text = "\n".join(lines)
+    if antigravity:
+        print(json.dumps({"injectSteps": [{"ephemeralMessage": text}]}))
+    else:
+        print(json.dumps({
+            "hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": text}
+        }))
 
 
 if __name__ == "__main__":

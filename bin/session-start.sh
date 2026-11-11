@@ -17,4 +17,4 @@ if [ ! -f "$INV" ] || [ "$(( $(date +%s) - $(stat -c %Y "$INV") ))" -gt 43200 ];
   nohup "$BRAIN/bin/inventory.sh" >/dev/null 2>&1 &
 fi
 
-exec python3 "$BRAIN/bin/context.py"
+exec python3 "$BRAIN/bin/context.py" "$@"

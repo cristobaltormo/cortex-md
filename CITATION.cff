@@ -7,6 +7,6 @@ authors:
     given-names: Cristóbal
 repository-code: https://github.com/cristobaltormo/cortex-md
 license: MIT
-version: 0.1.0
+version: 0.2.0
 date-released: 2026-11-11
-abstract: Memory for Claude Code that keeps itself honest, built from a generated inventory, curated notes and skills in a plain markdown git repo.
+abstract: Memory for AI coding agents (Claude Code, Antigravity CLI, Codex CLI) that keeps itself honest, built from a generated inventory, curated notes and skills in a plain markdown git repo.

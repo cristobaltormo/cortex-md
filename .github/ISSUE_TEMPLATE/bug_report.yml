@@ -25,7 +25,7 @@ body:
     id: env
     attributes:
       label: Environment
-      description: OS, Python version and Claude Code version.
-      placeholder: Debian 13, Python 3.13, Claude Code 2.x
+      description: OS, Python version, and the agent with its version.
+      placeholder: Debian 13, Python 3.13, Antigravity CLI 1.x
     validations:
       required: true

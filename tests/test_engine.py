@@ -97,20 +97,75 @@ class Brain(unittest.TestCase):
         ).stdout.strip()
         self.assertEqual(out, "Authorization: Bearer abc|opus")
 
-    def test_install_is_idempotent_and_rejects_bad_json(self):
-        settings = self.tmp / "settings.json"
-        env = {**self.env, "CLAUDE_SETTINGS": str(settings)}
+    def install(self, home, *args):
+        env = {**self.env, "HOME": str(home)}
+        for key in ("CLAUDE_SETTINGS", "CODEX_HOOKS", "ANTIGRAVITY_HOOKS", "ANTIGRAVITY_SKILLS_JSON"):
+            env.pop(key, None)
+        return subprocess.run(["bash", str(self.brain / "install.sh"), *args], capture_output=True, text=True, env=env)
+
+    def test_install_all_agents_is_idempotent(self):
+        home = self.tmp / "home"
+        home.mkdir()
         for _ in range(2):
-            subprocess.run(["bash", str(self.brain / "install.sh")], capture_output=True, text=True, env=env)
-        data = json.loads(settings.read_text())
-        self.assertEqual({k: len(v) for k, v in data["hooks"].items()},
+            self.assertEqual(self.install(home, "--agents", "all").returncode, 0)
+        claude = json.loads((home / ".claude" / "settings.json").read_text())
+        self.assertEqual({k: len(v) for k, v in claude["hooks"].items()},
                          {"SessionStart": 1, "SessionEnd": 1, "UserPromptSubmit": 1})
-        self.assertEqual(len(list(self.tmp.glob("settings.json.bak-*"))), 1)
+        codex = json.loads((home / ".codex" / "hooks.json").read_text())
+        self.assertEqual({k: len(v) for k, v in codex["hooks"].items()},
+                         {"SessionStart": 1, "UserPromptSubmit": 1, "SessionEnd": 1})
+        self.assertIn("--agent codex", codex["hooks"]["SessionStart"][0]["hooks"][0]["command"])
+        agy = json.loads((home / ".gemini" / "config" / "hooks.json").read_text())
+        self.assertEqual(sorted(agy["cortex-md"]), ["PreInvocation", "SessionStart", "Stop"])
+        skills = json.loads((home / ".gemini" / "config" / "skills.json").read_text())
+        self.assertEqual(skills["entries"], [{"path": str(self.brain / "skills")}])
+        for directory in (home / ".claude" / "skills", home / ".agents" / "skills"):
+            self.assertTrue((directory / "memory-keeping" / "SKILL.md").exists())
+        self.assertEqual(len(list((home / ".claude").glob("settings.json.bak-*"))), 0)
+
+    def test_install_preserves_foreign_hooks_and_rejects_bad_json(self):
+        home = self.tmp / "home"
+        (home / ".claude").mkdir(parents=True)
+        settings = home / ".claude" / "settings.json"
+        settings.write_text(json.dumps({"theme": "dark", "hooks": {"Stop": [{"hooks": [{"type": "command", "command": "x"}]}]}}))
+        self.assertEqual(self.install(home, "--agents", "claude").returncode, 0)
+        data = json.loads(settings.read_text())
+        self.assertEqual(data["theme"], "dark")
+        self.assertIn("Stop", data["hooks"])
+        self.assertEqual(len(list((home / ".claude").glob("settings.json.bak-*"))), 1)
         settings.write_text("{bad")
-        result = subprocess.run(["bash", str(self.brain / "install.sh")], capture_output=True, text=True, env=env)
+        result = self.install(home, "--agents", "claude")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("not valid JSON", result.stderr)
         self.assertEqual(settings.read_text(), "{bad")
+
+    def test_install_rejects_unknown_agent(self):
+        result = self.install(self.tmp, "--agents", "nope")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unknown agent", result.stderr)
+
+    def test_context_antigravity_format(self):
+        out = subprocess.run([sys.executable, str(self.brain / "bin" / "context.py"), "--agent", "antigravity"],
+                             capture_output=True, text=True, env=self.env).stdout
+        data = json.loads(out)
+        self.assertNotIn("hookSpecificOutput", data)
+        self.assertIn("Open fronts", data["injectSteps"][0]["systemMessage"]["systemMessage"])
+
+    def test_injection_antigravity_format(self):
+        prompt = json.dumps({"lastUserInput": "explain the invoice tool sqlite storage choice", "conversationId": "c1"})
+        data = json.loads(self.run_script("inject-memory.py", stdin=prompt).stdout)
+        self.assertIn("project-invoice-tool-storage-choice", data["injectSteps"][0]["ephemeralMessage"])
+
+    def test_session_end_light_commits_and_prints_json(self):
+        subprocess.run(["git", "init", "-q"], cwd=self.brain, check=True)
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", "add", "-A"], cwd=self.brain, check=True)
+        subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "init"], cwd=self.brain, check=True)
+        (self.brain / "PENDING.md").write_text("changed\n")
+        env = {**self.env, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
+        out = subprocess.run(["bash", str(self.brain / "bin" / "session-end.sh"), "--light"], capture_output=True, text=True, env=env).stdout
+        self.assertEqual(out.strip(), "{}")
+        log = subprocess.run(["git", "log", "--format=%s"], cwd=self.brain, capture_output=True, text=True).stdout
+        self.assertIn("Session of", log)
 
 
 if __name__ == "__main__":

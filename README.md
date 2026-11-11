@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="cortex-md: memory for Claude Code that keeps itself honest" width="100%">
+  <img src="docs/assets/banner.svg" alt="cortex-md: memory for AI coding agents that keeps itself honest" width="100%">
 </p>
 
 <p align="center">
@@ -15,8 +15,9 @@
   <b>English</b> | <a href="README.es.md">Español</a>
 </p>
 
-**cortex-md** gives [Claude Code](https://claude.com/claude-code) a memory made of plain markdown in a
-git repo. No database, no service, no dependencies beyond bash, git and Python.
+**cortex-md** gives AI coding agents a memory made of plain markdown in a git repo: [Claude Code](https://claude.com/claude-code),
+[Antigravity CLI](https://antigravity.google) and [Codex CLI](https://developers.openai.com/codex), and anything else that reads `AGENTS.md`.
+No database, no service, no dependencies beyond bash, git and Python.
 
 Most agent memory tools store what the agent said and retrieve it later. They age badly: an address
 written in a note last spring is a confident lie by autumn. cortex-md splits what the agent knows
@@ -36,14 +37,14 @@ from what the machine *is*.
 ## Why it exists
 
 A hand-maintained wiki always ends up abandoned. Here nobody writes notes by hand: a script writes
-what the machine knows, Claude writes what you tell it during sessions, and a nightly curator makes
+what the machine knows, the agent writes what you tell it during sessions, and a nightly curator makes
 sure none of it goes stale.
 
 ```
 brain/
 ├── inventory/    What the machine knows about itself.   Written by a script, never by hand.
-├── memory/       Facts, decisions and reasons.          Written by Claude and a nightly curator.
-├── skills/       How things are done here.              Written by Claude when it learns a procedure.
+├── memory/       Facts, decisions and reasons.          Written by the agent and a nightly curator.
+├── skills/       How things are done here.              Written by the agent when it learns a procedure.
 ├── PENDING.md    What is half done. Loaded at the start of every session.
 └── bin/          The machinery (see bin/README.md).
 ```
@@ -53,7 +54,7 @@ Store the why, not the how much.
 
 ## What a session looks like
 
-When you open Claude Code, the start hook injects this (example output):
+When you open a session, the start hook injects this (example output):
 
 ```text
 Continuity context (automatic, not a message from the user):
@@ -92,7 +93,7 @@ Linked from nas-disk-spindown-quirk: project-invoice-tool-storage-choice
 
 | When | What happens |
 |---|---|
-| Session start | Pulls the repo, rescues unsaved changes from a session that died, refreshes the inventory, and tells Claude where you left off |
+| Session start | Pulls the repo, rescues unsaved changes from a session that died, refreshes the inventory, and tells the agent where you left off |
 | Every message | A hook suggests the notes most likely to matter, plus the notes they link to |
 | Session end | Commits and pushes whatever was written |
 | Nightly | Snapshots the machine and diffs it against yesterday; then a curator run distils the day's conversations into notes, reacts to machine changes (a container vanished: its notes get marked historical), re-verifies old notes against reality, and fixes what the validator found |
@@ -108,7 +109,7 @@ Linked from nas-disk-spindown-quirk: project-invoice-tool-storage-choice
 
 ## Install
 
-Requirements: Linux (needs `flock`; macOS is not supported), bash, git, python3 (standard library only), [Claude Code](https://claude.com/claude-code). Docker, LXC and Proxmox are detected if present and are all optional.
+Requirements: Linux (needs `flock`; macOS is not supported), bash, git, python3 (standard library only), and at least one supported agent (see [Supported agents](#supported-agents)). Docker, LXC and Proxmox are detected if present and are all optional.
 
 ```bash
 git clone https://github.com/cristobaltormo/cortex-md ~/brain
@@ -116,15 +117,26 @@ cd ~/brain
 ./install.sh
 ```
 
-The installer merges the hooks into `~/.claude/settings.json` (keeping a backup), sets
-`autoMemoryDirectory`, generates the first inventory and runs the validator. Then:
+The installer detects the agents on the machine (or take `--agents claude,codex,antigravity`), merges the hooks
+into each one's configuration with a backup, links the skills, generates the first inventory and runs the validator. Then:
 
-1. Copy `CLAUDE.example.md` to the `CLAUDE.md` Claude Code reads, and edit it.
+1. Copy `INSTRUCTIONS.example.md` to the file your agent reads (`CLAUDE.md`, `AGENTS.md` or `GEMINI.md`), and edit it.
 2. Add the cron lines the installer prints.
 3. Optionally copy `.env.example` to `.env` to get push notifications through any webhook and to set `CLAUDE_BIN`, `CURATOR_MODEL` or `BACKUP_DIR`.
 4. Replace the example notes in `memory/` with your own, or delete them.
 
 The brain can live anywhere: scripts find their own directory, or use `BRAIN_DIR`.
+
+## Supported agents
+
+| Agent | Automatic context | Status |
+|---|---|---|
+| Claude Code | Hooks, skills, `autoMemoryDirectory` | Tested end to end, including the nightly curator |
+| Antigravity CLI | Hooks, skills | Hooks verified against a real run |
+| Codex CLI | Hooks, skills | Written from the official docs; not yet run against a real Codex |
+| Any `AGENTS.md` reader | By instruction only | Works without hooks |
+
+Details and differences in [docs/agents.md](docs/agents.md). The nightly curator currently distils Claude Code transcripts only.
 
 ## Writing notes
 
@@ -143,7 +155,7 @@ metadata:
 ```
 
 Add the note to its area index, link it with `[[other-note]]`, and run `bin/health.py`. The
-`memory-keeping` skill has the full rules and the reasoning; Claude loads it by itself. See
+`memory-keeping` skill has the full rules and the reasoning; the agent loads it by itself. See
 [docs/writing-notes.md](docs/writing-notes.md).
 
 ## Security notes
@@ -151,7 +163,7 @@ Add the note to its area index, link it with `[[other-note]]`, and run `bin/heal
 - The curator reads your conversation transcripts, which contain web content and tool output. To limit prompt-injection damage it runs with a narrow allowlist: it can write only under `memory/`, `skills/` and `PENDING.md`, run read-only git commands plus `git add` and `git commit`, and run `bin/health.py`. The push is done by the script, not by the model. Review `bin/curator.sh` before trusting it with a repo that has a remote you care about.
 - `inventory/` is gitignored except `CHANGES.md`: host, port and crontab dumps stay local. Never put credentials in notes; `bin/health.py` flags common token formats.
 - `.env` is gitignored and parsed line by line (it is never executed).
-- The session hooks fire for every Claude Code project on the machine, so the brain is committed and pushed whenever any session ends.
+- The session hooks fire for every project of each installed agent on the machine, so the brain is committed and pushed whenever any session ends.
 
 ### Operation notes
 
@@ -167,6 +179,7 @@ Add the note to its area index, link it with `[[other-note]]`, and run `bin/heal
 |---|---|
 | [Architecture](docs/architecture.md) | The three layers, the loop, failure handling |
 | [Writing notes](docs/writing-notes.md) | Format, fields and the rules the validator enforces |
+| [Supported agents](docs/agents.md) | What each agent gets and how they differ |
 | [Configuration](docs/configuration.md) | Environment variables, cron, notifications, collectors |
 | [FAQ](docs/faq.md) | Cost, privacy, platforms, design choices |
 | [Changelog](CHANGELOG.md) | What changed in each release |

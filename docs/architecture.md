@@ -28,7 +28,7 @@ the value.
    suggests up to three, plus the notes linked from the best one.
 3. **Session end.** `session-end.sh` commits what was written and pushes.
 4. **Nightly.** `inventory.sh` regenerates `inventory/`, `snapshot.py` stores `state.json`, and
-   `changes.py` diffs it against yesterday. Then `curator.sh` runs a headless Claude with a narrow
+   `changes.py` diffs it against yesterday. Then `curator.sh` runs a headless Claude Code session with a narrow
    allowlist to distil the day, react to the changes, re-verify old notes and fix validator defects.
 5. **Always.** `health.py` is the guard: the curator is told to fix whatever it reports, and the
    session start warns when it reports anything.

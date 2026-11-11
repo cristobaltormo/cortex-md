@@ -14,11 +14,11 @@ acknowledgement within a few days, and a fix or a clear explanation as soon as i
 
 ## Scope worth knowing about
 
-cortex-md runs scripts from Claude Code hooks and cron, and the nightly curator gives a headless
+cortex-md runs scripts from agent hooks (Claude Code, Antigravity CLI, Codex CLI) and cron, and the nightly curator gives a headless
 Claude session limited write access to the brain. Reports about any of these are in scope:
 
 - a way for note, transcript or inventory content to cause code execution outside the curator's allowlist;
 - a way for secrets to end up in the git history or in a notification;
-- the installer damaging an existing Claude Code configuration.
+- the installer damaging an existing agent configuration.
 
 The threat model and the curator's allowlist are described in the README under "Security notes".

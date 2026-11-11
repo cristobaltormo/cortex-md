@@ -3,6 +3,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -168,6 +169,14 @@ def system_warnings():
     return [f"- {w}" for w in warnings]
 
 
+def agent_format():
+    if "--agent" in sys.argv:
+        index = sys.argv.index("--agent")
+        if index + 1 < len(sys.argv):
+            return sys.argv[index + 1]
+    return os.environ.get("BRAIN_AGENT", "claude")
+
+
 def block(title, lines):
     return [f"**{title}**", *lines, ""] if lines else []
 
@@ -183,10 +192,12 @@ def main():
     if not lines:
         return
     text = "Continuity context (automatic, not a message from the user):\n\n" + "\n".join(lines).strip()
-    print(json.dumps({
-        "hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": text},
-    }))
-
+    if agent_format() == "antigravity":
+        print(json.dumps({"injectSteps": [{"systemMessage": {"systemMessage": text}}]}))
+    else:
+        print(json.dumps({
+            "hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": text},
+        }))
 
 if __name__ == "__main__":
     try:

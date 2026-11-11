@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400" role="img" aria-label="cortex-md: memory for Claude Code that keeps itself honest">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400" role="img" aria-label="cortex-md: memory for ai coding agents that keeps itself honest">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0b1220"/>
@@ -16,7 +16,7 @@
     <circle cx="124" cy="127.5" r="6" fill="#0f172a"/>
   </g>
   <text x="350" y="205" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="96" font-weight="700" fill="#f8fafc">cortex-md</text>
-  <text x="354" y="262" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="32" fill="#94a3b8">Memory for Claude Code that keeps itself honest</text>
+  <text x="354" y="262" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="32" fill="#94a3b8">Memory for AI coding agents that keeps itself honest</text>
   <text x="354" y="310" font-family="DejaVu Sans Mono, Menlo, monospace" font-size="24" fill="#38bdf8">inventory</text>
   <text x="498" y="310" font-family="DejaVu Sans Mono, Menlo, monospace" font-size="24" fill="#475569">/</text>
   <text x="522" y="310" font-family="DejaVu Sans Mono, Menlo, monospace" font-size="24" fill="#818cf8">memory</text>

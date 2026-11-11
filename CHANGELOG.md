@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-11
+
+### Added
+- Multi-agent support: Antigravity CLI and Codex CLI alongside Claude Code, with an installer that detects the agents present (`--agents`), merges hooks without touching foreign ones, and links the skills.
+- `bin/install-hooks.py`, `context.py --agent`, and an agent-aware `inject-memory.py` that answers in the format each agent expects.
+- `session-end.sh --light`: commit on every stop and push in the background at most every five minutes, for agents with no end-of-session event.
+- `docs/agents.md` with the support matrix and the differences between agents.
+
+### Changed
+- `CLAUDE.example.md` is now `INSTRUCTIONS.example.md`: one template for `CLAUDE.md`, `AGENTS.md` or `GEMINI.md`.
+- The project describes itself as memory for AI coding agents, not only Claude Code.
+
 ## [0.1.0] - 2026-11-11
 
 First public release.
@@ -22,5 +34,6 @@ First public release.
 - `install.sh` that merges the hooks into Claude Code settings idempotently.
 - Optional webhook notifications, at most one per title per day.
 
-[Unreleased]: https://github.com/cristobaltormo/cortex-md/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/cristobaltormo/cortex-md/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/cristobaltormo/cortex-md/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/cristobaltormo/cortex-md/releases/tag/v0.1.0

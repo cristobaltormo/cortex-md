@@ -1,6 +1,6 @@
 # FAQ
 
-**Is this a vector database for Claude?**
+**Is this a vector database for AI agents?**
 No. It is a folder of markdown files, a git repo and a handful of scripts. Retrieval is keyword
 scoring over a small, curated corpus.
 
@@ -16,6 +16,10 @@ Quota failures retry after the reset.
 **Can I use it without the curator?**
 Yes. Skip the cron lines. The hooks, the inventory and the validator work on their own, and you
 lose the nightly distilling and re-verification.
+
+**Which agents does it work with?**
+Claude Code, Antigravity CLI and Codex CLI get automatic context through hooks; anything that reads
+`AGENTS.md` can use the brain by instruction. See [agents.md](agents.md).
 
 **Can it run on macOS or Windows?**
 Not today: the scripts need `flock` and Linux tools. WSL should work but is untested.
